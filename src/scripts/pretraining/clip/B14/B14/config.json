@@ -1,0 +1,253 @@
+{
+  "root_path": "/home/ruo",
+  "available_corpus": {
+    "cc3m": {
+      "anno_path": "your_path",
+      "data_root": "",
+      "media_type": "image"
+    },
+    "webvid_10m": {
+      "anno_path": "your_path",
+      "data_root": "",
+      "media_type": "video"
+    },
+    "smol_test": {
+      "anno_path": "/root/StreamMamba/src/data_test/smol_test.json",
+      "data_root": "/root/StreamMamba/src/data_test/",
+      "media_type": "video"
+    },
+    "slim_kinetics": {
+      "anno_path": "/home/ruo/k600/train/train/kinetics_v2.json",
+      "data_root": "/home/ruo/k600/train/train/",
+      "media_type": "video",
+      "min_caption_length": 1
+    },
+    "activitynet_captions": {
+      "anno_path": "/home/ruo/activitynet/activitynet.json",
+      "data_root": "/home/ruo/activitynet/",
+      "media_type": "video",
+      "min_caption_length": 1
+    },
+    "slim_kinetics_act_val": {
+      "anno_path": "/home/ruo/k600/test/kinetics-test.json",
+      "data_root": "/home/ruo/k600/test",
+      "media_type": "video",
+      "is_act_rec": true
+    }
+  },
+  "VisionEncoders": {},
+  "TextEncoders": {
+    "bert": {
+      "name": "bert_base",
+      "pretrained": "bert-base-uncased",
+      "config": "configs/config_bert.json",
+      "d_model": 768,
+      "fusion_layer": 9
+    },
+    "bert_large": {
+      "name": "bert_large",
+      "pretrained": "bert-large-uncased",
+      "config": "configs/config_bert_large.json",
+      "d_model": 1024,
+      "fusion_layer": 19
+    },
+    "med_bert": {
+      "name": "med_bert_base",
+      "pretrained": "bert-base-uncased",
+      "config": "configs/med_config.json",
+      "d_model": 768
+    },
+    "med_bert_large": {
+      "name": "med_bert_large",
+      "pretrained": "bert-base-uncased",
+      "config": "configs/med_large_config.json",
+      "d_model": 768
+    }
+  },
+  "train_corpus": "slim_kinetics",
+  "train_file": {
+    "anno_path": "/home/ruo/k600/train/train/kinetics_v2.json",
+    "data_root": "/home/ruo/k600/train/train/",
+    "media_type": "video",
+    "min_caption_length": 1
+  },
+  "test_file": {
+    "act_val": {
+      "anno_path": "/home/ruo/k600/test/kinetics-test.json",
+      "data_root": "/home/ruo/k600/test",
+      "media_type": "video",
+      "is_act_rec": true
+    }
+  },
+  "test_types": [
+    "act_val"
+  ],
+  "num_workers": 2,
+  "stop_key": null,
+  "num_frames": 8,
+  "num_frames_test": 8,
+  "batch_size": 8,
+  "batch_size_test": 8,
+  "max_txt_l": 32,
+  "size_t": 224,
+  "inputs": {
+    "image_res": 224,
+    "video_input": {
+      "num_frames": 8,
+      "sample_type": "all",
+      "num_frames_test": 8,
+      "sample_type_test": "all",
+      "random_aug": false
+    },
+    "max_txt_l": {
+      "image": 32,
+      "video": 32
+    },
+    "batch_size": {
+      "image": 8,
+      "video": 8
+    },
+    "batch_size_test": {
+      "image": 8,
+      "video": 8
+    }
+  },
+  "model_repo": "qingy2024/InternVideo2-B14",
+  "model": {
+    "model_cls": "InternVideo2_CLIP_small",
+    "vision_encoder": {
+      "name": "internvideo2",
+      "in_chans": 3,
+      "patch_size": 14,
+      "img_size": 224,
+      "qkv_bias": false,
+      "drop_path_rate": 0.0,
+      "head_drop_path_rate": 0.0,
+      "embed_dim": 768,
+      "num_heads": 12,
+      "mlp_ratio": 4,
+      "init_values": 0.1,
+      "qk_normalization": true,
+      "depth": 12,
+      "use_flash_attn": true,
+      "use_fused_rmsnorm": true,
+      "use_fused_mlp": true,
+      "fused_mlp_heuristic": 1,
+      "drop_cls_token": false,
+      "attn_pool_num_heads": 16,
+      "clip_embed_dim": 768,
+      "layerscale_no_force_fp32": true,
+      "num_frames": 8,
+      "tubelet_size": 1,
+      "sep_pos_embed": false,
+      "use_checkpoint": false,
+      "checkpoint_num": 0,
+      "align_dim": 512
+    },
+    "streaming_vision_encoder": {
+      "vit_lite_embed_dim": 768,
+      "rnn_type": "mamba",
+      "rnn_hidden_size": 1024,
+      "rnn_num_layers": 3,
+      "rnn_dropout": 0.0,
+      "fc_hidden_layers": [
+        768
+      ],
+      "teacher_clip_embed_dim": 768,
+      "text_embed_dim": 512
+    },
+    "mobileclip_type": {
+      "name": "mobileclip_b"
+    },
+    "temp": 0.01,
+    "temp_min": 0.01,
+    "use_streaming_vision_align": false,
+    "freeze_vision": true,
+    "freeze_mobileclip_vision": true,
+    "open_vision_clip_projector": false,
+    "freeze_mobileclip_text": true,
+    "open_text_projection": false,
+    "open_text_lora": false,
+    "vision_ckpt_path": "/home/ruo/.cache/huggingface/hub/models--qingy2024--InternVideo2-B14/snapshots/31aa563154648d77964f19ebeb57ab28e8557cf3/internvideo2_vision.pt",
+    "load_vision_ckpt_from_internvideo2_stage2": false,
+    "mobileclip_ckpt_path": "/home/ruo/.cache/huggingface/hub/models--qingy2024--InternVideo2-B14/snapshots/31aa563154648d77964f19ebeb57ab28e8557cf3/mobileclip_blt.pt",
+    "extra_ckpt_path": "/home/ruo/.cache/huggingface/hub/models--qingy2024--InternVideo2-B14/snapshots/31aa563154648d77964f19ebeb57ab28e8557cf3/internvideo2_clip.pt"
+  },
+  "criterion": {
+    "loss_weight": {
+      "vtc": 1.0
+    }
+  },
+  "optimizer": {
+    "opt": "adamW",
+    "lr": 1e-05,
+    "opt_betas": [
+      0.9,
+      0.98
+    ],
+    "weight_decay": 0.01,
+    "max_grad_norm": 0.7,
+    "different_lr": {
+      "enable": true,
+      "module_names": [
+        "streaming_vision_encoder.vit_lite"
+      ],
+      "lr": 2e-06
+    }
+  },
+  "scheduler": {
+    "sched": "cosine",
+    "epochs": 1,
+    "min_lr_multi": 0.01,
+    "warmup_epochs": 0.1
+  },
+  "evaluate": false,
+  "deep_fusion": false,
+  "evaluation": {
+    "eval_frame_ensemble": "concat",
+    "eval_x_only": false,
+    "k_test": 128,
+    "eval_offload": true
+  },
+  "use_half_precision": true,
+  "use_bf16": true,
+  "gradient_checkpointing": true,
+  "wandb": {
+    "enable": true,
+    "entity": "qingy2019-conker-mobile-inc-",
+    "project": "window_iv2"
+  },
+  "dist_url": "env://",
+  "device": "cuda",
+  "mode": "pt",
+  "output_dir": "scripts/pretraining/clip/B14/B14",
+  "resume": true,
+  "debug": false,
+  "log_freq": 1,
+  "seed": 42,
+  "save_latest": false,
+  "save_iter": 100,
+  "eval_freq_steps": 50,
+  "eval_video_repo_id": "qingy2024/backflip_train",
+  "eval_video_filename": "1.mp4",
+  "eval_plot_output_dir": "scripts/pretraining/clip/B14/cosine_sim_graphs",
+  "auto_resume": true,
+  "pretrained_path": "",
+  "deepspeed": {
+    "enable": true,
+    "stage": 1
+  },
+  "enable_contrastive_distillation": false,
+  "contrastive_temperature": 0.07,
+  "contrastive_lambda": 0.4,
+  "contrastive_warmup_pct": 0.3,
+  "contrastive_ramp_iters": 500,
+  "enable_mobileclip_ft": false,
+  "unfreeze_mobileclip_pct": 0.5,
+  "rank": 0,
+  "world_size": 1,
+  "gpu": 0,
+  "distributed": true,
+  "dist_backend": "nccl",
+  "deepspeed_config": "scripts/pretraining/clip/B14/B14/deepspeed_config.json"
+}

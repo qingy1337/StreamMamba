@@ -12,7 +12,8 @@ from huggingface_hub import hf_hub_download
 
 def ensure_dependencies():
     try:
-        import einops  # noqa: F401
+        import einops
+        pass
     except Exception:
         print("Installing...")
         subprocess.check_call(
@@ -124,17 +125,14 @@ def main():
         rnn_type = "mamba_spfs" if use_spfs else "mamba"
     print(f"Running in {args.mode} mode.")
 
-    # Folder setup
     if use_spfs:
         folder_name = f"results_{rnn_type}_ct_{args.confidence_threshold}_mcs_{args.max_consecutive_skips}"
     else:
         folder_name = f"results_{rnn_type}"
 
-    # Add sampling rate to folder name if using uniform mode
     if "uniform" in args.mode:
         folder_name += f"_sr_{args.sampling_rate}"
 
-    # Determine root folder based on mode
     if args.mode == "streammamba_skip":
         root_folder = "results_skip"
     elif args.mode == "streammamba_spfs_uniform":
@@ -167,7 +165,6 @@ def main():
     config = Config.from_file(os.path.join(args.config_dir, "config.py"))
     config = eval_dict_leaf(config)
 
-    # Set rnn_type dynamically
     config.model.streaming_vision_encoder.rnn_type = rnn_type
 
     intern_model = InternVideo2_CLIP_small(config)
@@ -229,7 +226,6 @@ def main():
             batch_size=1, device=device
         )
 
-        # Warm-up with first seven frames
         for i in range(7):
             f = frames[i]
             tensor = frames2tensor(
@@ -246,16 +242,14 @@ def main():
             end = time.time()
             total_time += end - start
 
-        # Process remaining frames
         for idx, f in enumerate(frames[7:], start=7):
             force_skip = False
             if args.mode == "streammamba_spfs_uniform":
                 sampling_rate = args.sampling_rate
                 if sampling_rate > 1:
-                    # Process 1 frame every 'sampling_rate' frames (last in cycle)
                     force_skip = (idx - 7) % sampling_rate != (sampling_rate - 1)
                 else:
-                    force_skip = False  # Process all if rate is 1 or less
+                    force_skip = False
 
             tensor = frames2tensor(
                 [f], fnum=1, target_size=(size_t, size_t), device=device
@@ -290,9 +284,9 @@ def main():
                 )
                 if spfs_info.skipped:
                     skipped_frames += 1
-            else:  # streammamba_spfs_uniform
+            else:
                 threshold = -1e6 if force_skip else 1.0
-                max_skip = 1000 if force_skip else 0  # Allow many consecutive skips for uniform mode
+                max_skip = 1000 if force_skip else 0
                 _, hidden, spfs_info = intern_model.encode_streaming_vision(
                     tensor,
                     hidden,
